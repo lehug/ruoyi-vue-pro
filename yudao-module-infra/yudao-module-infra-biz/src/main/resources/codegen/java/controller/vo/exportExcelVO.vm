@@ -31,7 +31,7 @@ import ${DictConvertClassName};
  * @author ${table.author}
  */
 @Data
-public class ${sceneEnum.prefixClass}${table.className}ExcelVO {
+public class ${sceneEnum.prefixClass}${table.className}ExportExcelVO {
 
 #foreach ($column in $columns)
     #if (${column.listOperationResult})##返回字段

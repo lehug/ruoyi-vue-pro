@@ -1,0 +1,23 @@
+package ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo;
+
+import ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo.${sceneEnum.prefixClass}${table.className}ImportExcelVO;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+
+/**
+ * ${table.classComment} ImportExcel VO 批量导入excel的VO
+ * 避免类型转化错误，阻碍全行的数据检查，所以字段统一用string接收，避免单个转化报错导致结束
+ */
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${sceneEnum.prefixClass}${table.className}ExportExcelErrVO extends ${sceneEnum.prefixClass}${table.className}ImportExcelVO{
+    //错误信息
+    @ExcelProperty(value = "错误信息", order = 100)
+    @ColumnWidth(50)
+    private String errMsg;
+}

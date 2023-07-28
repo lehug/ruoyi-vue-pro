@@ -1,12 +1,17 @@
 package ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName};
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.json.JSONUtil;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 #if ($sceneEnum.scene == 1)import org.springframework.security.access.prepost.PreAuthorize;#end
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+
 import io.swagger.v3.oas.annotations.Operation;
 
 import javax.validation.constraints.*;
@@ -14,10 +19,13 @@ import javax.validation.*;
 import javax.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import ${PageResultClassName};
 import ${CommonResultClassName};
 import static ${CommonResultClassName}.success;
+import static ${CommonResultClassName}.error;
+
 
 import ${ExcelUtilsClassName};
 
@@ -28,6 +36,13 @@ import ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePack
 import ${basePackage}.module.${table.moduleName}.dal.dataobject.${table.businessName}.${table.className}DO;
 import ${basePackage}.module.${table.moduleName}.convert.${table.businessName}.${table.className}Convert;
 import ${basePackage}.module.${table.moduleName}.service.${table.businessName}.${table.className}Service;
+import ${basePackage}.framework.redis.util.excel.ExcelErrDataDAO;
+import ${basePackage}.framework.excel.core.ErrorCodeConstants;
+import ${basePackage}.framework.excel.core.dto.ExcelCheckResult;
+import ${basePackage}.framework.excel.core.listener.FullCheckListener;
+import ${basePackage}.framework.excel.core.util.ExcelUtils;
+import ${basePackage}.framework.operatelog.core.annotations.OperateLog;
+import ${basePackage}.framework.redis.util.excel.ExcelErrDataDAO;
 
 @Tag(name = "${sceneEnum.name} - ${table.classComment}")
 @RestController
@@ -36,6 +51,8 @@ import ${basePackage}.module.${table.moduleName}.service.${table.businessName}.$
 @Validated
 public class ${sceneEnum.prefixClass}${table.className}Controller {
 
+    @Resource
+    private ExcelErrDataDAO<${sceneEnum.prefixClass}${table.className}ExportExcelErrVO> excelErrDataDAO;
     @Resource
     private ${table.className}Service ${classNameVar}Service;
 
@@ -104,8 +121,39 @@ public class ${sceneEnum.prefixClass}${table.className}Controller {
               HttpServletResponse response) throws IOException {
         List<${table.className}DO> list = ${classNameVar}Service.get${simpleClassName}List(exportReqVO);
         // 导出 Excel
-        List<${sceneEnum.prefixClass}${table.className}ExcelVO> datas = ${table.className}Convert.INSTANCE.convertList02(list);
-        ExcelUtils.write(response, "${table.classComment}.xls", "数据", ${sceneEnum.prefixClass}${table.className}ExcelVO.class, datas);
+        List<${sceneEnum.prefixClass}${table.className}ExportExcelVO> datas = ${table.className}Convert.INSTANCE.convertList02(list);
+        ExcelUtils.write(response, "${table.classComment}.xls", "数据", ${sceneEnum.prefixClass}${table.className}ExportExcelVO.class, datas);
     }
 
+    @PostMapping("/import")
+    @Operation(summary = "导入${table.classComment}")
+    @Parameters({@Parameter(name = "file", description = "Excel 文件", required = true)})
+#if ($sceneEnum.scene == 1)    @PreAuthorize("@ss.hasPermission('${permissionPrefix}:import')")#end
+    public CommonResult<Void> importExcel(@RequestParam("file") MultipartFile file) throws Exception {
+        FullCheckListener<${sceneEnum.prefixClass}${table.className}ImportExcelVO> readListener = new FullCheckListener<>(${sceneEnum.prefixClass}${table.className}ImportExcelVO.class);
+        ExcelUtils.read(file, ${sceneEnum.prefixClass}${table.className}ImportExcelVO.class, readListener);
+        ExcelCheckResult<${sceneEnum.prefixClass}${table.className}ImportExcelVO> excelCheckResult = readListener.getExcelCheckResult();
+
+        if (excelCheckResult.isHasInvalidDate()) {
+            List<${sceneEnum.prefixClass}${table.className}ExportExcelErrVO> excelErrVOList = excelCheckResult.getRows().stream().map(o -> {
+                ${sceneEnum.prefixClass}${table.className}ExportExcelErrVO excelErrVO = JSONUtil.toBean(JSONUtil.parseObj(o.getT()), ${sceneEnum.prefixClass}${table.className}ExportExcelErrVO.class);
+                excelErrVO.setErrMsg(o.getErrMsg());
+                return excelErrVO;
+            }).collect(Collectors.toList());
+            String uuid = IdUtil.simpleUUID();
+            excelErrDataDAO.set(uuid, excelErrVOList);
+            return error(ErrorCodeConstants.EXCEL_DATA_INVALID.getCode(), uuid);
+        }
+        List<${sceneEnum.prefixClass}${table.className}DO> needSaveDOS = ${sceneEnum.prefixClass}${table.className}Convert.INSTANCE.convertDOListFromImport(excelCheckResult.getSuccessRows());
+        ${classNameVar}Service.batchSave(needSaveDOS);
+        return success(null);
+    }
+
+    @GetMapping("/export-err-excel")
+    @Operation(summary = "导出${table.classComment}错误数据 Excel")
+    @OperateLog(type = EXPORT)
+    public void export${simpleClassName}ErrExcel(@RequestParam("uuid") String uuid, HttpServletResponse response) throws IOException {
+        List<${sceneEnum.prefixClass}${table.className}ExportExcelErrVO> excelErrVOS = excelErrDataDAO.get(uuid, ${sceneEnum.prefixClass}${table.className}ExportExcelErrVO.class);
+        ExcelUtils.write(response, "${table.classComment}-错误数据.xls", "数据", ${sceneEnum.prefixClass}${table.className}ExportExcelErrVO.class, excelErrVOS);
+    }
 }

@@ -66,7 +66,9 @@ public class CodegenEngine {
             .put(javaTemplatePath("controller/vo/respVO"), javaModuleImplVOFilePath("RespVO"))
             .put(javaTemplatePath("controller/vo/updateReqVO"), javaModuleImplVOFilePath("UpdateReqVO"))
             .put(javaTemplatePath("controller/vo/exportReqVO"), javaModuleImplVOFilePath("ExportReqVO"))
-            .put(javaTemplatePath("controller/vo/excelVO"), javaModuleImplVOFilePath("ExcelVO"))
+            .put(javaTemplatePath("controller/vo/exportExcelVO"), javaModuleImplVOFilePath("ExportExcelVO"))
+            .put(javaTemplatePath("controller/vo/exportExcelErrVO"), javaModuleImplVOFilePath("ExportExcelErrVO"))
+            .put(javaTemplatePath("controller/vo/importExcelVO"), javaModuleImplVOFilePath("ImportExcelVO"))
             .put(javaTemplatePath("controller/controller"), javaModuleImplControllerFilePath())
             .put(javaTemplatePath("convert/convert"),
                     javaModuleImplMainFilePath("convert/${table.businessName}/${table.className}Convert"))

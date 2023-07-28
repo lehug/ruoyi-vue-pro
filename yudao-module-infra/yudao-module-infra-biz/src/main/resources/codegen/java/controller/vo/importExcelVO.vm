@@ -1,0 +1,44 @@
+package ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo;
+
+import ${basePackage}.framework.excel.core.util.ExcelPattern;
+import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import java.util.*;
+
+import javax.validation.constraints.*;
+
+/**
+ * ${table.classComment} ImportExcel VO 批量导入excel的VO
+ * 避免类型转化错误，阻碍全行的数据检查，所以字段统一用string接收，避免单个转化报错导致结束
+ */
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = false)
+public class ${sceneEnum.prefixClass}${table.className}ImportExcelVO {
+
+#foreach ($column in $columns)
+#if (${column.createOperation} && ${column.updateOperation} && ${column.listOperationResult})##通用操作
+
+## 提供给 baseVO、createVO、updateVO 生成字段
+    @ExcelProperty("${column.columnComment}")
+#if (!${column.nullable})## 判断 @NotEmpty 和 @NotNull 注解
+#if (${field.fieldType} == 'String')
+    @NotEmpty(message = "${column.columnComment}不能为空")
+#else
+    @NotNull(message = "${column.columnComment}不能为空")
+#end
+#end
+#if (${column.javaType} == "LocalDateTime")## 时间类型
+    @Pattern(regexp = ExcelPattern.DATE_TIME1, message = ExcelPattern.DATE_TIME1_MSG)
+#end
+#if (${column.javaType} == "LocalDate")## 日期类型
+    @Pattern(regexp = ExcelPattern.DATE2, message = ExcelPattern.DATE2_MSG)
+#end
+    private String ${column.javaField};
+#end
+#end
+}

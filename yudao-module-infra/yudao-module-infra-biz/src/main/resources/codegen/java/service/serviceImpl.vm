@@ -79,4 +79,8 @@ public class ${table.className}ServiceImpl implements ${table.className}Service 
         return ${classNameVar}Mapper.selectList(exportReqVO);
     }
 
+    @Override
+    public void batchSave(List<${table.className}DO> list) {
+        ${classNameVar}Mapper.insertBatch(list);
+    }
 }

@@ -29,6 +29,8 @@ public interface ${table.className}Convert {
 
     PageResult<${sceneEnum.prefixClass}${table.className}RespVO> convertPage(PageResult<${table.className}DO> page);
 
-    List<${sceneEnum.prefixClass}${table.className}ExcelVO> convertList02(List<${table.className}DO> list);
+    List<${sceneEnum.prefixClass}${table.className}ExportExcelVO> convertList02(List<${table.className}DO> list);
+
+    List<${table.className}DO> convertDOListFromImport(List<${sceneEnum.prefixClass}${table.className}ImportExcelVO> list);
 
 }
