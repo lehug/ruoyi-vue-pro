@@ -26,11 +26,7 @@ public class ${sceneEnum.prefixClass}${table.className}ImportExcelVO {
 ## 提供给 baseVO、createVO、updateVO 生成字段
     @ExcelProperty("${column.columnComment}")
 #if (!${column.nullable})## 判断 @NotEmpty 和 @NotNull 注解
-#if (${field.fieldType} == 'String')
     @NotEmpty(message = "${column.columnComment}不能为空")
-#else
-    @NotNull(message = "${column.columnComment}不能为空")
-#end
 #end
 #if (${column.javaType} == "LocalDateTime")## 时间类型
     @Pattern(regexp = ExcelPattern.DATE_TIME1, message = ExcelPattern.DATE_TIME1_MSG)

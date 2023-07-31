@@ -8,6 +8,7 @@ import ${PageParamClassName};
 #foreach ($column in $columns)
 #if (${column.javaType} == "LocalDate")
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static ${DateUtilsClassName}.FORMAT_YEAR_MONTH_DAY;
@@ -29,6 +30,14 @@ import static ${DateUtilsClassName}.TIME_ZONE_DEFAULT;
 ## 字段模板
 #macro(columnTpl $prefix $prefixStr)
     @Schema(description = "${prefixStr}${column.columnComment}"#if ("$!column.example" != ""), example = "${column.example}"#end)
+    #if (${column.javaType} == "LocalDateTime")## 时间类型
+        @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+        @JsonFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND, timezone = TIME_ZONE_DEFAULT)
+    #end
+    #if (${column.javaType} == "LocalDate")## 日期类型
+        @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY)
+        @JsonFormat(pattern = FORMAT_YEAR_MONTH_DAY, timezone = TIME_ZONE_DEFAULT)
+    #end
     private ${column.javaType}#if ("$!prefix" != "") ${prefix}${JavaField}#else ${column.javaField}#end;
 #end
 
