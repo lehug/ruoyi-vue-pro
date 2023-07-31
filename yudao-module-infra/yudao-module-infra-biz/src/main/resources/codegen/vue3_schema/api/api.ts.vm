@@ -44,3 +44,8 @@ export const delete${simpleClassName} = async (id: number) => {
 export const export${simpleClassName}Api = async (params) => {
   return await request.download({ url: '${baseURL}/export-excel', params })
 }
+
+// 导出${table.classComment} 错误信息Excel
+export const export${simpleClassName}ExcelErrApi = async (uuid: string) => {
+  return await request.download({ url: '${baseURL}/export-err-excel?uuid=' + uuid })
+}

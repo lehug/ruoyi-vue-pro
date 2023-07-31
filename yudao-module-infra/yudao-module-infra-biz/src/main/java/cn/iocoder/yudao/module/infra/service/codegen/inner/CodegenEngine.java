@@ -118,6 +118,8 @@ public class CodegenEngine {
                     vue3FilePath("views/${table.moduleName}/${classNameVar}/index.vue"))
             .put(CodegenFrontTypeEnum.VUE3_SCHEMA.getType(), vue3SchemaTemplatePath("views/form.vue"),
                     vue3FilePath("views/${table.moduleName}/${classNameVar}/${simpleClassName}Form.vue"))
+            .put(CodegenFrontTypeEnum.VUE3_SCHEMA.getType(), vue3SchemaTemplatePath("views/import.vue"),
+                    vue3FilePath("views/${table.moduleName}/${classNameVar}/${simpleClassName}Import.vue"))
             .put(CodegenFrontTypeEnum.VUE3_SCHEMA.getType(), vue3SchemaTemplatePath("api/api.ts"),
                     vue3FilePath("api/${table.moduleName}/${classNameVar}/index.ts"))
             // Vue3 vben 模版
