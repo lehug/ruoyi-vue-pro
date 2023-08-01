@@ -30,9 +30,12 @@ public class ${sceneEnum.prefixClass}${table.className}ImportExcelVO {
 #end
 #if (${column.javaType} == "LocalDateTime")## 时间类型
     @Pattern(regexp = ExcelPattern.DATE_TIME1, message = ExcelPattern.DATE_TIME1_MSG)
-#end
-#if (${column.javaType} == "LocalDate")## 日期类型
+#elseif (${column.javaType} == "LocalDate")## 日期类型
     @Pattern(regexp = ExcelPattern.DATE2, message = ExcelPattern.DATE2_MSG)
+#elseif (${column.javaType} == "BigDecimal" || $javaType == "Double" || $javaType == "Float")## 带小数数字
+    @Pattern(regexp = ExcelPattern.DECIMAL, message = ExcelPattern.DECIMAL_MSG)
+#elseif (${column.javaType} == "Integer" || $javaType == "Long" || $javaType == "Byte" || $javaType == "Short")## 整数数字
+    @Pattern(regexp = ExcelPattern.NUMBER, message = ExcelPattern.NUMBER_MSG)
 #end
     private String ${column.javaField};
 #end

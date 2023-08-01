@@ -193,6 +193,7 @@ public class CodegenEngine {
         String simpleClassName = removePrefix(table.getClassName(), upperFirst(table.getModuleName()));
         bindingMap.put("simpleClassName", simpleClassName);
         bindingMap.put("simpleClassName_underlineCase", toUnderlineCase(simpleClassName)); // 将 DictType 转换成 dict_type
+        bindingMap.put("pascalCaseModuleName", upperFirst(table.getModuleName()));
         bindingMap.put("classNameVar", lowerFirst(simpleClassName)); // 将 DictType 转换成 dictType，用于变量
         // 将 DictType 转换成 dict-type
         String simpleClassNameStrikeCase = toSymbolCase(simpleClassName, '-');

@@ -51,7 +51,7 @@ import { getAccessToken, getTenantId } from '@/utils/auth'
 import request from '@/config/axios'
 import download from '@/utils/download'
 
-defineOptions({ name: '${table.moduleName}${classNameVar}ImportForm' })
+defineOptions({ name: '${pascalCaseModuleName}${simpleClassName}ImportForm' })
 
 const message = useMessage() // 消息弹窗
 
